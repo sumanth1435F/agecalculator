@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Age Calculator</title>
+    <style>
+        :root {
+            --primary-color: #4a6bff;
+            --secondary-color: #f0f2ff;
+            --accent-color: #ff6b6b;
+            --text-color: #333;
+            --light-text: #777;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 600px;
+            transition: all 0.3s ease;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        
+        input[type="date"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        input[type="date"]:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            width: 100%;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        
+        button:hover {
+            background-color: #3a5bef;
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: var(--secondary-color);
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .result.show {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .age-display {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .detail {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #ddd;
+        }
+        
+        .detail:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            color: var(--light-text);
+        }
+        
+        .detail-value {
+            font-weight: 500;
+        }
+        
+        .fun-fact {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff8e6;
+            border-left: 4px solid #ffc107;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+        }
+        
+        .comparison {
+            margin-top: 20px;
+        }
+        
+        .comparison-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .comparison-icon {
+            width: 30px;
+            height: 30px;
+            background-color: var(--secondary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+        
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            width: auto;
+            color: var(--text-color);
+        }
+        
+        .dark-mode {
+            --primary-color: #6b8cff;
+            --secondary-color: #2a2a3a;
+            --text-color: #f0f0f0;
+            --light-text: #aaa;
+            background-color: #1a1a2a;
+        }
+        
+        .dark-mode .container {
+            background-color: #2a2a3a;
+        }
+        
+        .dark-mode input[type="date"] {
+            background-color: #3a3a4a;
+            border-color: #4a4a5a;
+            color: white;
+        }
+        
+        .dark-mode .fun-fact {
+            background-color: #3a3a2a;
+            border-left-color: #ffb347;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" id="themeToggle">🌓</button>
+    
+    <div class="container">
+        <h1>Interactive Age Calculator</h1>
+        
+        <div class="input-group">
+            <label for="birthdate">Enter your birth date:</label>
+            <input type="date" id="birthdate" name="birthdate" required>
+        </div>
+        
+        <div class="input-group">
+            <label for="compareDate">Compare to date (optional):</label>
+            <input type="date" id="compareDate" name="compareDate">
+        </div>
+        
+        <button id="calculateBtn">Calculate Age</button>
+        
+        <div class="result" id="result">
+            <div class="age-display" id="ageDisplay"></div>
+            
+            <div class="detail">
+                <span class="detail-label">Years:</span>
+                <span class="detail-value" id="years"></span>
+            </div>
+            <div class="detail">
+                <span class="detail-label">Months:</span>
+                <span class="detail-value" id="months"></span>
+            </div>
+            <div class="detail">
+                <span class="detail-label">Days:</span>
+                <span class="detail-value" id="days"></span>
+            </div>
+            <div class="detail">
+                <span class="detail-label">Weeks:</span>
+                <span class="detail-value" id="weeks"></span>
+            </div>
+            
+            <div class="fun-fact" id="funFact"></div>
+            
+            <div class="comparison" id="comparison">
+                <h3>Your age in different units:</h3>
+                <div class="comparison-item">
+                    <div class="comparison-icon">🕒</div>
+                    <span id="hours"></span>
+                </div>
+                <div class="comparison-item">
+                    <div class="comparison-icon">⏱️</div>
+                    <span id="minutes"></span>
+                </div>
+                <div class="comparison-item">
+                    <div class="comparison-icon">🐶</div>
+                    <span id="dogYears"></span>
+                </div>
+                <div class="comparison-item">
+                    <div class="comparison-icon">🌙</div>
+                    <span id="lunarMonths"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set default dates
+            const today = new Date();
+            document.getElementById('birthdate').valueAsDate = new Date(today.getFullYear() - 25, today.getMonth(), today.getDate());
+            document.getElementById('compareDate').valueAsDate = today;
+            
+            // Theme toggle
+            const themeToggle = document.getElementById('themeToggle');
+            themeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+                themeToggle.textContent = document.body.classList.contains('dark-mode') ? '🌞' : '🌓';
+            });
+            
+            // Calculate button
+            document.getElementById('calculateBtn').addEventListener('click', calculateAge);
+            
+            // Also calculate when pressing Enter in date fields
+            document.getElementById('birthdate').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') calculateAge();
+            });
+            document.getElementById('compareDate').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') calculateAge();
+            });
+            
+            function calculateAge() {
+                const birthdate = new Date(document.getElementById('birthdate').value);
+                let compareDate = new Date(document.getElementById('compareDate').value);
+                
+                // If compare date is empty, use today
+                if (isNaN(compareDate.getTime())) {
+                    compareDate = new Date();
+                    document.getElementById('compareDate').valueAsDate = compareDate;
+                }
+                
+                // Validate dates
+                if (isNaN(birthdate.getTime())) {
+                    alert('Please enter a valid birth date');
+                    return;
+                }
+                
+                if (birthdate > compareDate) {
+                    alert('Birth date cannot be in the future!');
+                    return;
+                }
+                
+                // Calculate age
+                const age = getAge(birthdate, compareDate);
+                
+                // Display results
+                document.getElementById('ageDisplay').textContent = `Your age is ${age.years} years, ${age.months} months, and ${age.days} days`;
+                document.getElementById('years').textContent = age.years;
+                document.getElementById('months').textContent = age.months;
+                document.getElementById('days').textContent = age.days;
+                document.getElementById('weeks').textContent = Math.floor(age.totalDays / 7);
+                
+                // Additional calculations
+                document.getElementById('hours').textContent = `Hours lived: ${(age.totalDays * 24).toLocaleString()}`;
+                document.getElementById('minutes').textContent = `Minutes lived: ${(age.totalDays * 24 * 60).toLocaleString()}`;
+                document.getElementById('dogYears').textContent = `Age in dog years: ${Math.floor(age.years * 7)} (approx)`;
+                document.getElementById('lunarMonths').textContent = `Lunar months: ${Math.floor(age.totalDays / 29.53)}`;
+                
+                // Generate fun fact
+                generateFunFact(birthdate, compareDate, age);
+                
+                // Show result
+                document.getElementById('result').classList.add('show');
+            }
+            
+            function getAge(birthdate, compareDate) {
+                let years = compareDate.getFullYear() - birthdate.getFullYear();
+                let months = compareDate.getMonth() - birthdate.getMonth();
+                let days = compareDate.getDate() - birthdate.getDate();
+                
+                if (days < 0) {
+                    months--;
+                    // Get days in previous month
+                    const prevMonth = new Date(compareDate.getFullYear(), compareDate.getMonth(), 0);
+                    days += prevMonth.getDate();
+                }
+                
+                if (months < 0) {
+                    years--;
+                    months += 12;
+                }
+                
+                // Calculate total days
+                const diffTime = compareDate - birthdate;
+                const totalDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                
+                return {
+                    years,
+                    months,
+                    days,
+                    totalDays
+                };
+            }
+            
+            function generateFunFact(birthdate, compareDate, age) {
+                const facts = [];
+                
+                // Zodiac signs
+                const zodiac = getZodiacSign(birthdate);
+                facts.push(`Your zodiac sign is ${zodiac}.`);
+                
+                // Birthday facts
+                const nextBirthday = new Date(compareDate.getFullYear(), birthdate.getMonth(), birthdate.getDate());
+                if (nextBirthday < compareDate) {
+                    nextBirthday.setFullYear(nextBirthday.getFullYear() + 1);
+                }
+                const daysUntilBirthday = Math.floor((nextBirthday - compareDate) / (1000 * 60 * 60 * 24));
+                facts.push(`Your next birthday is in ${daysUntilBirthday} days.`);
+                
+                // Century facts
+                if (age.years >= 100) {
+                    facts.push("You've lived for a century! Amazing!");
+                } else {
+                    facts.push(`You're ${100 - age.years} years away from becoming a centenarian.`);
+                }
+                
+                // Leap years
+                const leapYears = countLeapYears(birthdate, compareDate);
+                facts.push(`You've lived through ${leapYears} leap years.`);
+                
+                // Random fact
+                const randomFacts = [
+                    `If you're ${age.years} years old, you were born when the internet was ${Math.max(0, age.years - 30)} years younger.`,
+                    `In ${age.years} years, your heart has beaten approximately ${(age.years * 35e6).toLocaleString()} times.`,
+                    `You've spent about ${Math.floor(age.years * 0.33)} years sleeping.`,
+                    `You've likely grown about ${age.years * 1.25} inches of hair in your lifetime.`,
+                    `You've been alive for ${(age.totalDays / 365.25 * 100).toFixed(2)}% of a century.`
+                ];
+                facts.push(randomFacts[Math.floor(Math.random() * randomFacts.length)]);
+                
+                document.getElementById('funFact').textContent = facts.join(' ');
+            }
+            
+            function getZodiacSign(date) {
+                const day = date.getDate();
+                const month = date.getMonth() + 1;
+                
+                if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) return "Aries";
+                if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) return "Taurus";
+                if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) return "Gemini";
+                if ((month === 6 && day >= 21) || (month === 7 && day <= 22)) return "Cancer";
+                if ((month === 7 && day >= 23) || (month === 8 && day <= 22)) return "Leo";
+                if ((month === 8 && day >= 23) || (month === 9 && day <= 22)) return "Virgo";
+                if ((month === 9 && day >= 23) || (month === 10 && day <= 22)) return "Libra";
+                if ((month === 10 && day >= 23) || (month === 11 && day <= 21)) return "Scorpio";
+                if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) return "Sagittarius";
+                if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) return "Capricorn";
+                if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) return "Aquarius";
+                return "Pisces";
+            }
+            
+            function countLeapYears(startDate, endDate) {
+                let count = 0;
+                for (let year = startDate.getFullYear(); year <= endDate.getFullYear(); year++) {
+                    if ((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0) {
+                        const leapDay = new Date(year, 1, 29); // Feb 29
+                        if (leapDay >= startDate && leapDay <= endDate) {
+                            count++;
+                        }
+                    }
+                }
+                return count;
+            }
+        });
+    </script>
+</body>
+</html>
